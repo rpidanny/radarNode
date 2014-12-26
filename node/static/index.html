@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Radar</title>
+<link href="css/style.css" rel="stylesheet" type="text/css">
+<link href="css/radar.css" rel="stylesheet" type="text/css">
+<script language="javascript" src="js/jquery-1.8.3.min.js"></script>
+<script language="javascript" src="js/radar.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io();
+ 
+  socket.on('radarData', function(msg){
+  	var message=msg.toString();
+  	//var encoded = new Buffer(msg, 'binary').toString('utf8');
+  	//console.log('data is ' +encoded);
+  	var arr = message.split(",");
+  	var distance= parseInt(arr[0])*0.7;
+  	var angle = parseInt(arr[1])+90;
+  	//alert(angle.toString());
+  	//alert('dataReceived'+msg.toString());
+  	//angle = float(Theta) /180 * pi; 
+  	//console.log('Distance : ' + arr[0]);
+    //console.log('Angle : '+ arr[1]);
+
+    $("#needleRotation").css("transform","rotate("+(angle+10).toString()+"deg) "); 
+
+	var c = document.getElementById("dataPlot");
+	var ctx = c.getContext("2d");
+	ctx.beginPath();
+	ctx.arc(200-distance*Math.cos((angle-90)*0.0174532),200-distance*Math.sin((angle-90)*0.017453),1,0,2*Math.PI);
+	ctx.strokeStyle = "#0f0";
+	ctx.stroke();
+
+	//alert(angle);
+	if(angle==(160+90) || angle == (30+90)) ctx.clearRect(0, 0, 400, 400);
+	document.getElementById('distance').innerHTML = (angle-90).toString();
+/*
+	socket.emit('angle', i);
+	i++;
+	*/
+	
+		//ctx.clearRect(0, 0, 400, 400);
+
+  });
+
+</script>
+</head>
+<body>
+	<!--<div id="body">
+	<div class="center">-->
+	<div id="radarContainer">
+	<canvas id="radar" width="400" height="400"></canvas>
+	<canvas id="dataPlot" width="400" height="400"></canvas>
+	<canvas id="needleRotation" width="400" height="400"></canvas>
+	</div>
+	<span id = "distance"></span>
+	<!--</div>
+	</div>-->
+</body>
+</html>
